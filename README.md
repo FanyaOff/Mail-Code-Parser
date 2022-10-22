@@ -10,6 +10,11 @@ This application outputs all types of codes from Steam using an IMAP server
 
 * Outputs all types of codes and links from steam
 
+# What codes may not come (not checked)
+* Code when writing in support of steam
+
+* Link to confirm the trade
+
 # How to use this program with Google server
 1.[Turn on 2-Step Verification](https://support.google.com/accounts/answer/185839) in your google account. This step is required as Google only allows generating passwords for apps on accounts that have 2-Step Verification enabled.
 

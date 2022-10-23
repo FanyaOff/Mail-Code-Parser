@@ -119,7 +119,7 @@ namespace SRM
             }
             File.WriteAllText("temp.txt", html);
             // codes
-            if (html.Contains("Похоже, вы пытаетесь войти в аккаунт с нового устройства. Для входа вам понадобится код Steam Guard"))
+            if (html.Contains("Ваш аккаунт Steam: доступ с нового компьютера"))
             {
                 setOutput(File.ReadLines("temp.txt").Skip(226).First().Replace("	", String.Empty).Replace("</td>", String.Empty), false, OutputType.LINK);
                 File.Delete("temp.txt");

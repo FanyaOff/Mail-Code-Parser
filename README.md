@@ -1,4 +1,4 @@
-# Parse-Code-From-Mail (old Steam-Remote-Manager)
+# Mail Code Parser (old Steam Remote Manager)
 This application outputs all types of codes from Steam and Epic Games using an IMAP server
 
 # Screenshot

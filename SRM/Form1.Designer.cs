@@ -42,6 +42,8 @@
             this.label5 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.ssl = new System.Windows.Forms.ComboBox();
+            this.serviceBox = new System.Windows.Forms.ComboBox();
+            this.label7 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // login
@@ -170,11 +172,33 @@
             this.ssl.Size = new System.Drawing.Size(121, 23);
             this.ssl.TabIndex = 13;
             // 
+            // serviceBox
+            // 
+            this.serviceBox.FormattingEnabled = true;
+            this.serviceBox.Items.AddRange(new object[] {
+            "Steam",
+            "Epicgames"});
+            this.serviceBox.Location = new System.Drawing.Point(94, 284);
+            this.serviceBox.Name = "serviceBox";
+            this.serviceBox.Size = new System.Drawing.Size(121, 23);
+            this.serviceBox.TabIndex = 14;
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(131, 266);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(44, 15);
+            this.label7.TabIndex = 15;
+            this.label7.Text = "Service";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(312, 287);
+            this.ClientSize = new System.Drawing.Size(312, 315);
+            this.Controls.Add(this.label7);
+            this.Controls.Add(this.serviceBox);
             this.Controls.Add(this.ssl);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.port);
@@ -213,5 +237,7 @@
         private Label label5;
         private Label label6;
         private ComboBox ssl;
+        private ComboBox serviceBox;
+        private Label label7;
     }
 }

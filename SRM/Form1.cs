@@ -22,7 +22,7 @@ namespace SRM
             checkThread.Start();
         }
 
-        public enum OutputType { CODE, LINK, ERROR, INFO}
+        public enum OutputType { CODE, LINK, ERROR, INFO, DEBUG}
 
         void check()
         {
@@ -43,6 +43,7 @@ namespace SRM
                         ssl.Enabled = true;
                         port.Enabled = true;
                     }));
+                    Thread.Sleep(50);
                 }
                 catch { }
             }
@@ -82,8 +83,19 @@ namespace SRM
                     for (int i = client.Inbox.Count - 1; i < client.Inbox.Count; i++) 
                     {
                         var message = client.Inbox.GetMessage(i);
-                        Regex regex = new Regex(RegexList.linkRegex, RegexOptions.IgnoreCase);
-                        getCode(message.HtmlBody, regex);
+                        List<string> services = new();
+                        foreach (var service in serviceBox.Items)
+                            services.Add(service.ToString());
+                        Regex linkRegex = new Regex(RegexList.linkRegex, RegexOptions.IgnoreCase);
+                        if (services.Contains(serviceBox.Text))
+                        {
+                            if (serviceBox.Text == "Steam")
+                                getSteamCode(message.HtmlBody, linkRegex);
+                            if (serviceBox.Text == "Epicgames")
+                                getEpicGamesCode(message.HtmlBody.ToString());
+                            return;
+                        }
+                        setOutput("Check the correctness of the settings you have set. Most likely you forgot to choose a service or an IMAP server", true, OutputType.ERROR);
                     }
                 }
             }
@@ -98,8 +110,44 @@ namespace SRM
 
         }
 
-        public void getCode(string html, Regex regex)
+        public void getEpicGamesCode(string html)
         {
+            File.WriteAllText("epic.txt", Regex.Replace(html.Replace(" ", string.Empty).Replace("\t", string.Empty), "<.*?>", String.Empty)); // writing html to file
+            string[] lines = File.ReadAllLines("epic.txt");
+            int i = -1;
+            if (html.Contains("<!-- Start code -->")) // epicgames code
+            {
+                foreach (var line in lines)
+                {
+                    i++;
+                    if (int.TryParse(line, out int num))
+                        setOutput(lines[i], false, OutputType.CODE);
+                    else
+                        continue;
+                }
+                File.Delete("epic.txt");
+                return;
+            }
+            if (html.Contains("https://accounts.epicgames.com/")) // epicgames link
+            {
+                foreach (var line in lines)
+                {
+                    i++;
+                    if (line.Contains("https://accounts.epicgames.com/"))
+                        setOutput(lines[i], false, OutputType.LINK);
+                    else
+                        continue;
+                }
+                File.Delete("epic.txt");
+                return;
+            }
+            setOutput("Code don't found. Try send mail again or open issue on my github", false, OutputType.ERROR);
+        }
+
+        public void getSteamCode(string html, Regex regex)
+        {
+            File.WriteAllText("temp.txt", Regex.Replace(html.Replace(" ", string.Empty).Replace("\t", string.Empty), "<.*?>", String.Empty));
+            string[] lines = File.ReadAllLines("temp.txt");
             Match match;
             // links
             for (match = regex.Match(html); match.Success; match = match.NextMatch())
@@ -117,22 +165,16 @@ namespace SRM
                     }
                 }
             }
-            File.WriteAllText("temp.txt", html);
-            // codes
-            if (html.Contains("Ваш аккаунт Steam: доступ с нового компьютера"))
+            if (html.Contains("<!-- Auth Code -->"))
             {
-                setOutput(File.ReadLines("temp.txt").Skip(226).First().Replace("	", String.Empty).Replace("</td>", String.Empty), false, OutputType.LINK);
+                var result = lines.Where(x => x.Length == 5);
+                foreach (var line in result)
+                    setOutput(line, false, OutputType.CODE);
+
                 File.Delete("temp.txt");
                 return;
             }
-            if (html.Contains("Код для смены пароля вашего аккаунта Steam"))
-            {
-                setOutput(File.ReadLines("temp.txt").Skip(237).First().Replace("	", String.Empty).Replace("</td>", String.Empty), false, OutputType.LINK);
-                File.Delete("temp.txt");
-                return;
-            }
-            File.Delete("temp.txt");
-            setOutput("Code or link don't found! Send again or open issue on my github", false, OutputType.ERROR);
+            setOutput("Code don't found. Try send mail again or open issue on my github", false, OutputType.ERROR);
         }
         public void setOutput(string text, bool timestamp, OutputType type)
         {
